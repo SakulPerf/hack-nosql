@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { Profile } from 'selenium-webdriver/firefox';
 
 @Component({
   selector: 'app-login',
@@ -7,7 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginPage implements OnInit {
 
-  constructor() { }
+  constructor(public navCtrl : NavController) { 
+
+   
+
+  }
+  profile(){
+    this.navCtrl.navigateForward('profile');
+      
+  }
 
   ngOnInit() {
   }
