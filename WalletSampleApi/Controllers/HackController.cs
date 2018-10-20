@@ -57,6 +57,26 @@ namespace WalletSampleApi.Controllers
         {
         }
 
+        [HttpGet("coinprices")]
+        public IEnumerable<CoinPrice> GetCoinPrices()
+        {
+            return new List<CoinPrice>
+            {
+                new CoinPrice
+                {
+                    Symbol = "BTC",
+                    Buy =  6565.25,
+                    Sell = 6000,
+                },
+                new CoinPrice
+                {
+                    Symbol = "ETH",
+                    Buy =  203.47,
+                    Sell = 200,
+                },
+            };
+        }
+
         [HttpPost("register")]
         public CreateWalletResponse Create([FromBody]CreateWalletRequest req)
         {
