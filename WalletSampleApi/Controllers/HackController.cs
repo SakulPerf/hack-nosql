@@ -50,5 +50,17 @@ namespace WalletSampleApi.Controllers
         public void Post([FromBody] CoinPriceUpdate updateCoin)
         {
         }
+
+        [HttpPost("login")]
+        public LoginResponse Login([FromBody]LoginRequest req)
+        {
+            return new LoginResponse { IsSuccess = true };
+        }
+
+        [HttpPost("buy")]
+        public BuyResponse Buy([FromBody]BuyRequest req)
+        {
+            return new BuyResponse { IsSuccess = true };
+        }
     }
 }
