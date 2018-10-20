@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-buy',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BuyPage implements OnInit {
 
-  constructor() { }
+  constructor(public navCtrl: NavController, private http: HttpClient) { 
+
+  }
 
   ngOnInit() {
+  }
+
+  profile(){
+    this.navCtrl.navigateBack("profile");
   }
 
 }
