@@ -19,7 +19,7 @@ export class LoginPage implements OnInit {
     var data = {
       username: this.username
     };
-    this.http.post('http://localhost:58514/api/Hack/login', data)
+    this.http.post('http://localhost:5000/api/Hack/login', data)
       .subscribe((it:any) => {
           if(it.isSuccess){
             this.navCtrl.navigateForward('profile');
