@@ -2,6 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from '@ionic/angular';
+import { LoginPage } from '../login/login.page';
 
 @Component({
   selector: 'app-profile',
@@ -9,39 +10,35 @@ import { NavController, NavParams } from '@ionic/angular';
   styleUrls: ['./profile.page.scss'],
 })
 export class ProfilePage implements OnInit {
+
   private username: string;
-  private coins: string[];
+  private wallet: any = {};
 
-  resule: string;
-  constructor(public navCtrl: NavController, public http: HttpClient, public actroute : ActivatedRoute) {
-    
-    console.log(this.actroute.snapshot.NavParams.username)
-    
-    this.http.get('http:localhost:5000/api/Hack/' + this.username)
-      .subscribe((it: any) => {
-        this.resule = it
-        console.log(this.resule);
-      });
-
+  constructor(public navCtrl: NavController, public http: HttpClient, public actroute: ActivatedRoute) {
   }
 
   goBuyingPage() {
-    var data = {
-      username: this.username
-    };
-    this.http.post('http://localhost:5000/api/Hack/login', data)
-      .subscribe((it: any) => {
-        if (it.isSuccess) {
-          this.navCtrl.navigateForward('buy');
-        }
-      });
+    this.navCtrl.navigateForward('buy');
   }
 
   goLogin() {
     this.navCtrl.navigateBack("login");
   }
+
   ngOnInit() {
+    this.reloadProfile();
+  }
+
+  ionViewDidLoad() {
+    this.reloadProfile();
+  }
+
+  private reloadProfile(){
+    this.username = LoginPage.CurrentUsername;
+    this.http.get('http://hackathoncoins.azurewebsites.net/api/Hack/' + LoginPage.CurrentUsername)
+      .subscribe((it: any) => {
+        this.wallet = it
+      });
   }
 
 }
-.

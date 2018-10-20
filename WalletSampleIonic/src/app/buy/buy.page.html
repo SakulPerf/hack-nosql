@@ -12,64 +12,46 @@
       </h1>
     </ion-card-header>
     <ion-card-content>
-      <ion-select placeholder="Select Your Order">
-        <ion-select-option>
-          BTC (Bitcoin)
-        </ion-select-option>
-        <ion-select-option>
-          BCH (BitcoinCash)
-        </ion-select-option>
-        <ion-select-option>
-          DAS (Dash)
-        </ion-select-option>
-        <ion-select-option>
-          DOG (Dogecoin)
-        </ion-select-option>
-        <ion-select-option>
-          ETH (Ethereum)
-        </ion-select-option>
-        <ion-select-option>
-          EVX (Exverex Token)
-        </ion-select-option>
-        <ion-select-option>
-          LTC (Litecoin)
-        </ion-select-option>
-        <ion-select-option>
-          OMG (Omise Go)
-        </ion-select-option>
-        <ion-select-option>
-          XZC (Zcoin)
+      <ion-select [(ngModel)]="selectedCoin" placeholder="Select Your Order">
+        <ion-select-option *ngFor="let it of coins" [value]="it">
+          {{ it.symbol }}
         </ion-select-option>
       </ion-select>
 
+
       <ion-row>
         <ion-col>
-          THB you spend
+          1 coin per USD
         </ion-col>
         <ion-col>
-          <ion-input  full placeholder="Amount to spend">
- 
-          </ion-input>
+          {{ selectedCoin.buy }}
         </ion-col>
       </ion-row>
 
       <ion-row>
-          <ion-col>
-          Coin you recieve
-          </ion-col>
-          <ion-col>
-            <ion-input placeholder="Amount to recieve">
-  
-            </ion-input>
-          </ion-col>
-        </ion-row>
+        <ion-col>
+          Buy amount (USD)
+        </ion-col>
+        <ion-col>
+          <ion-input [(ngModel)]="buyAmount"></ion-input>
+        </ion-col>
+      </ion-row>
 
-      <ion-button (click)="profile()" class="button">
+      <ion-row>
+        <ion-col>
+          Coin you recieve
+        </ion-col>
+        <ion-col>
+          {{ buyAmount/selectedCoin.buy }}
+        </ion-col>
+      </ion-row>
+
+      <ion-button (click)="buy()" class="button">
         summit
-      </ion-button>     
+      </ion-button>
 
     </ion-card-content>
   </ion-card>
-  
+
 </ion-content>
 <!--  -->

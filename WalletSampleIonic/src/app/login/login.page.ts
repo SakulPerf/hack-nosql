@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LoginPage implements OnInit {
 
+  public static CurrentUsername:string;
   private username: string;
 
   constructor(public navCtrl: NavController, private http: HttpClient) {
@@ -19,9 +20,10 @@ export class LoginPage implements OnInit {
     var data = {
       username: this.username
     };
-    this.http.post('http://localhost:5000/api/Hack/login', data)
+    this.http.post('http://hackathoncoins.azurewebsites.net/api/Hack/login', data)
       .subscribe((it:any) => {
           if(it.isSuccess){
+            LoginPage.CurrentUsername = this.username;
             this.navCtrl.navigateForward('profile');
           }
       });
