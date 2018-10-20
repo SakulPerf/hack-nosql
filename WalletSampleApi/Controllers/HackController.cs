@@ -14,9 +14,7 @@ namespace WalletSampleApi.Controllers
         private readonly IMongoRepository repo;
 
         public HackController(IMongoRepository repo)
-        {
-            this.repo = repo;
-        }
+            => this.repo = repo;
 
         // GET api/values
         [HttpGet]
@@ -27,28 +25,20 @@ namespace WalletSampleApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<CustomerWallet> Get(string id)
         {
-            //return new ActionResult<CustomerWallet>(repo.GetWallet(id));
-            return new CustomerWallet
+            var selectedAccount = repo.GetWallet(id);
+            var isAccountExistring = selectedAccount != null;
+            if (!isAccountExistring) return null;
+
+            var symbolQry = selectedAccount.Coins.Select(it => it.Symbol).Distinct();
+            var coinPriceQry = repo.GetCoinPrices(symbolQry.ToArray()).ToList();
+            selectedAccount.Coins = selectedAccount.Coins.Select(it =>
             {
-                Username = "jdoe",
-                Coins = new List<CustomerCoin>
-                {
-                    new CustomerCoin
-                    {
-                        Symbol = "BTC",
-                        BuyingRate = 6565.25,
-                        BuyingAt = new DateTime(2018, 10, 9, 9, 32, 23),
-                        USDValue = 6500
-                    },
-                    new CustomerCoin
-                    {
-                        Symbol = "ETH",
-                        BuyingRate = 203.47,
-                        BuyingAt = new DateTime(2018, 9, 7, 12, 38, 33),
-                        USDValue = 200.23
-                    },
-                },
-            };
+                var selectedCoinPrice = coinPriceQry.FirstOrDefault(c => c.Symbol == it.Symbol);
+                it.USDValue = selectedCoinPrice == null ? 0 : it.Coins * selectedCoinPrice.Sell;
+                return it;
+            }).ToList();
+
+            return new ActionResult<CustomerWallet>(selectedAccount);
         }
 
         // POST api/values
@@ -90,19 +80,44 @@ namespace WalletSampleApi.Controllers
         [HttpPost("buy")]
         public BuyResponse Buy([FromBody]BuyRequest req)
         {
+            var selectedAccount = repo.GetWallet(req.Username);
+            var isAccountExistring = selectedAccount != null;
+            if (!isAccountExistring) return null;
+
             var now = DateTime.Now;
             var selectedCoin = repo.GetCoinPrice(req.Symbol);
             var isSymbolExistring = selectedCoin != null;
             if (isSymbolExistring)
             {
+                var receivedCoins = req.USDValue / selectedCoin.Buy;
                 repo.AddBuyRecord(new BuyRecord
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Username = req.Username,
                     BuyingAt = now,
                     BuyingRate = selectedCoin.Buy,
                     Symbol = req.Symbol,
-                    USDValue = req.USDValue,
+                    ReceivedCoins = receivedCoins
                 });
+
+                var selectedAccountCoin = selectedAccount.Coins.FirstOrDefault(it => it.Symbol == req.Symbol);
+                if (selectedAccountCoin == null)
+                {
+                    selectedAccount.Coins.Add(new CustomerCoin
+                    {
+                        BuyingAt = now,
+                        BuyingRate = selectedCoin.Buy,
+                        Symbol = req.Symbol,
+                        Coins = receivedCoins
+                    });
+                }
+                else
+                {
+                    selectedAccountCoin.BuyingAt = now;
+                    selectedAccountCoin.BuyingRate = selectedCoin.Buy;
+                    selectedAccountCoin.Coins += receivedCoins;
+                }
+                repo.UpdateCustomerWallet(selectedAccount);
             }
 
             return new BuyResponse
@@ -110,7 +125,7 @@ namespace WalletSampleApi.Controllers
                 IsSuccess = isSymbolExistring,
                 BuyingAt = now,
                 Symbol = req.Symbol,
-                USDValue = req.USDValue,
+                ReceivedCoins = selectedCoin == null ? 0 : req.USDValue / selectedCoin.Buy,
                 BuyingRate = selectedCoin?.Buy ?? 0
             };
         }

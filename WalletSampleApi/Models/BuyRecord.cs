@@ -9,6 +9,8 @@ namespace WalletSampleApi.Models
     public class BuyRecord
     {
         [BsonId]
+        public string Id { get; set; }
+
         public string Username { get; set; }
         public string Symbol { get; set; }
         /// <summary>
@@ -22,6 +24,6 @@ namespace WalletSampleApi.Models
         /// <summary>
         /// มูลค่าหากแลกเป็น USD ตอนนี้
         /// </summary>
-        public double USDValue { get; set; }
+        public double ReceivedCoins { get; set; }
     }
 }

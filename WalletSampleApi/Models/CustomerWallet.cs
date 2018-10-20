@@ -28,5 +28,6 @@ namespace WalletSampleApi.Models
         /// มูลค่าหากแลกเป็น USD ตอนนี้
         /// </summary>
         public double USDValue { get; set; }
+        public double Coins { get; set; }
     }
 }

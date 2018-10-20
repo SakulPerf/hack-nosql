@@ -33,26 +33,40 @@ namespace WalletSampleApi.Repositories
         }
 
         public IEnumerable<CustomerWallet> GetWallets()
-            => CustomerWalletCollection.Find(it => true).ToList();
+            => CustomerWalletCollection.Find(it => true)
+                .ToEnumerable();
+
+        public void UpdateCustomerWallet(CustomerWallet wallet)
+        {
+            var updateDefinition = new UpdateDefinitionBuilder<CustomerWallet>()
+                .Set(it => it.Coins, wallet.Coins);
+            CustomerWalletCollection.UpdateOne(it => it.Username == wallet.Username, updateDefinition);
+        }
 
         public void CreateNewWallet(CustomerWallet wallet)
             => CustomerWalletCollection.InsertOne(wallet);
 
         public CustomerWallet GetWallet(string username)
             => CustomerWalletCollection
-                .Find(it => it.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+                .Find(it => it.Username == username)
                 .FirstOrDefault();
 
         public void AddBuyRecord(BuyRecord rec)
             => BuyRecordCollection.InsertOne(rec);
 
         public IEnumerable<CoinPrice> GetCoinPrices()
-            => CoinPriceCollection.Find(it => true).ToList();
+            => CoinPriceCollection.Find(it => true)
+                .ToEnumerable();
 
         public CoinPrice GetCoinPrice(string symbol)
             => CoinPriceCollection
-                .Find(it => it.Symbol.Equals(symbol, StringComparison.CurrentCultureIgnoreCase))
+                .Find(it => it.Symbol == symbol)
                 .FirstOrDefault();
+
+        public IEnumerable<CoinPrice> GetCoinPrices(params string[] symbols)
+            => CoinPriceCollection
+                .Find(it => symbols.Contains(it.Symbol))
+                .ToEnumerable();
 
         public void UpdateCoinPrice(CoinPrice update)
         {

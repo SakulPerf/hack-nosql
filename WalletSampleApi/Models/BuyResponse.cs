@@ -8,7 +8,7 @@ namespace WalletSampleApi.Models
     public class BuyResponse
     {
         public bool IsSuccess { get; set; }
-        public string Message { get; set; }
+        public string Message { get => IsSuccess ? string.Empty : "Symbol or User not found."; }
         public string Symbol { get; set; }
         /// <summary>
         /// ราคาตอนซื้อ
@@ -18,9 +18,6 @@ namespace WalletSampleApi.Models
         /// ซื้อเมื่อไหร่
         /// </summary>
         public DateTime BuyingAt { get; set; }
-        /// <summary>
-        /// มูลค่าหากแลกเป็น USD ตอนนี้
-        /// </summary>
-        public double USDValue { get; set; }
+        public double ReceivedCoins { get; set; }
     }
 }
