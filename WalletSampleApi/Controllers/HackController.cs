@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using WalletSampleApi.Models;
+using WalletSampleApi.Repositories;
 
 namespace WalletSampleApi.Controllers
 {
@@ -11,17 +11,23 @@ namespace WalletSampleApi.Controllers
     [ApiController]
     public class HackController : ControllerBase
     {
+        private readonly IMongoRepository repo;
+
+        public HackController(IMongoRepository repo)
+        {
+            this.repo = repo;
+        }
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "jdoe", "ptparker" };
-        }
+            => new ActionResult<IEnumerable<string>>(repo.GetWallets().Select(it => it.Username));
 
         // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<CustomerWallet> Get(string id)
         {
+            //return new ActionResult<CustomerWallet>(repo.GetWallet(id));
             return new CustomerWallet
             {
                 Username = "jdoe",
@@ -51,10 +57,27 @@ namespace WalletSampleApi.Controllers
         {
         }
 
+        [HttpPost("register")]
+        public CreateWalletResponse Create([FromBody]CreateWalletRequest req)
+        {
+            var isUsernameAlreadyExisting = repo.GetWallets().Any(it => it.Username == req.Username);
+            if (!isUsernameAlreadyExisting)
+            {
+                repo.CreateNewWallet(new CustomerWallet
+                {
+                    Username = req.Username,
+                    Coins = new List<CustomerCoin>()
+                });
+            }
+
+            return new CreateWalletResponse { Username = req.Username, IsSuccess = !isUsernameAlreadyExisting };
+        }
+
         [HttpPost("login")]
         public LoginResponse Login([FromBody]LoginRequest req)
         {
-            return new LoginResponse { IsSuccess = true };
+            var isSuccess = repo.GetWallets().Any(it => it.Username == req.Username);
+            return new LoginResponse { IsSuccess = isSuccess };
         }
 
         [HttpPost("buy")]

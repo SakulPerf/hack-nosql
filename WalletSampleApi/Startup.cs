@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using NJsonSchema;
 using NSwag.AspNetCore;
 using System.Reflection;
-
+using WalletSampleApi.Repositories;
 
 namespace WalletSampleApi
 {
@@ -32,6 +32,7 @@ namespace WalletSampleApi
 
             // Register the Swagger services
             services.AddSwagger();
+            services.AddTransient<IMongoRepository, MongoRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
