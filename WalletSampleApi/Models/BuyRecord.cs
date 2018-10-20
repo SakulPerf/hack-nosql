@@ -1,14 +1,15 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace WalletSampleApi.Models
 {
-    public class BuyResponse
+    public class BuyRecord
     {
-        public bool IsSuccess { get; set; }
-        public string Message { get; set; }
+        [BsonId]
+        public string Username { get; set; }
         public string Symbol { get; set; }
         /// <summary>
         /// ราคาตอนซื้อ

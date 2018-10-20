@@ -54,28 +54,15 @@ namespace WalletSampleApi.Controllers
         // POST api/values
         [HttpPost]
         public void Post([FromBody] CoinPriceUpdate updateCoin)
-        {
-        }
+            => updateCoin?.PriceList?.ForEach(it => repo.UpdateCoinPrice(it));
+
+        [HttpPost("newcoin")]
+        public void CreateNewCoin([FromBody] CoinPrice coin)
+            => repo.CreateNewCoin(coin);
 
         [HttpGet("coinprices")]
         public IEnumerable<CoinPrice> GetCoinPrices()
-        {
-            return new List<CoinPrice>
-            {
-                new CoinPrice
-                {
-                    Symbol = "BTC",
-                    Buy =  6565.25,
-                    Sell = 6000,
-                },
-                new CoinPrice
-                {
-                    Symbol = "ETH",
-                    Buy =  203.47,
-                    Sell = 200,
-                },
-            };
-        }
+            => repo.GetCoinPrices();
 
         [HttpPost("register")]
         public CreateWalletResponse Create([FromBody]CreateWalletRequest req)
@@ -103,7 +90,29 @@ namespace WalletSampleApi.Controllers
         [HttpPost("buy")]
         public BuyResponse Buy([FromBody]BuyRequest req)
         {
-            return new BuyResponse { IsSuccess = true };
+            var now = DateTime.Now;
+            var selectedCoin = repo.GetCoinPrice(req.Symbol);
+            var isSymbolExistring = selectedCoin != null;
+            if (isSymbolExistring)
+            {
+                repo.AddBuyRecord(new BuyRecord
+                {
+                    Username = req.Username,
+                    BuyingAt = now,
+                    BuyingRate = selectedCoin.Buy,
+                    Symbol = req.Symbol,
+                    USDValue = req.USDValue,
+                });
+            }
+
+            return new BuyResponse
+            {
+                IsSuccess = isSymbolExistring,
+                BuyingAt = now,
+                Symbol = req.Symbol,
+                USDValue = req.USDValue,
+                BuyingRate = selectedCoin?.Buy ?? 0
+            };
         }
     }
 }

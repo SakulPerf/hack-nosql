@@ -11,5 +11,10 @@ namespace WalletSampleApi.Repositories
         void CreateNewWallet(CustomerWallet wallet);
         CustomerWallet GetWallet(string username);
         IEnumerable<CustomerWallet> GetWallets();
+        void AddBuyRecord(BuyRecord rec);
+        IEnumerable<CoinPrice> GetCoinPrices();
+        CoinPrice GetCoinPrice(string symbol);
+        void UpdateCoinPrice(CoinPrice update);
+        void CreateNewCoin(CoinPrice data);
     }
 }
