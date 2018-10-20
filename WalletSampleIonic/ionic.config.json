@@ -1,0 +1,7 @@
+{
+  "name": "WalletSampleIonic",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
